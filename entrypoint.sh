@@ -10,9 +10,7 @@ fi
 REGION=`curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | awk -F\" '/region/ {print $4}'`
 mount -t nfs4 -o nfsvers=4.1 $(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone).${EFS_FS_ID}.efs.${REGION}.amazonaws.com:/ /efs
 
-for p in /opt/graphite /opt/graphite/conf /opt/graphite/storage /opt/statsd ; do
-    mkdir -p /efs/${p}
-    chmod 777 /efs/${p}
-done
+# -n will not overwrite files in /efs
+mv -vn /originals/* /efs/
 
 /sbin/my_init

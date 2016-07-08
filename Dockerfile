@@ -2,13 +2,13 @@ FROM hopsoft/graphite-statsd
 
 RUN apt-get -y update \
  && apt-get -y install nfs-common \
- && mkdir /efs
+ && mkdir /efs \
+ && mkdir /originals
 
-# Dirs inside efs do not exist yet, we just need to point symlinks to them
+# Dirs inside efs do not exist yet, we need to set aside our working dirs so the entrypoint can move them into place
 
-#/opt/graphite, /opt/graphite/conf, /opt/graphite/storage, or /opt/statsd
-RUN for p in /opt/graphite /opt/graphite/conf /opt/graphite/storage /opt/statsd ; do \
-    rm -rf $p; ln -sf /efs/$p $p; done
+RUN for p in /opt/graphite /opt/statsd ; do \
+    mv $p /originals/; ln -sf /efs$p $p; done
 
 ADD entrypoint.sh /entrypoint.sh
 
